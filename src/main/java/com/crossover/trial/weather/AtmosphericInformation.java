@@ -1,9 +1,13 @@
 package com.crossover.trial.weather;
 
+import java.io.Serializable;
+
 /**
  * encapsulates sensor information for a particular location
  */
-public class AtmosphericInformation {
+public class AtmosphericInformation implements Serializable {
+
+    private static final long serialVersionUID = -5317972341273507458L;
 
     /**
      * temperature in degrees celsius

@@ -1,9 +1,13 @@
 package com.crossover.trial.weather;
 
+import java.io.Serializable;
+
 /**
  * A collected point, including some information about the range of collected values
  */
-public class DataPoint {
+public class DataPoint implements Serializable {
+
+    private static final long serialVersionUID = -2533695717816373790L;
 
     /**
      * the mean of the observations

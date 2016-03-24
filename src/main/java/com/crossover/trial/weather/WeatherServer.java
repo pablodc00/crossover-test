@@ -20,15 +20,25 @@ public class WeatherServer {
     private static HttpServer server;
     private int port = -1;
 
+    private boolean production = false;
+
     public WeatherServer() {
     }
 
-    public WeatherServer(int port) {
-        this.port = port;
+    public WeatherServer(boolean production) {
+        this.production = production;
     }
 
     public static void main(String[] args) throws InterruptedException {
-        WeatherServer server = new WeatherServer();
+        WeatherServer server;
+        String mode = System.getProperty("mode");
+        if(mode != null && mode.equalsIgnoreCase("production")) {
+            System.out.println("Starting Weather Server in production mode");
+            server = new WeatherServer(true);
+        }
+        else {
+            server = new WeatherServer();
+        }
         server.start();
         Thread.currentThread().join();
         server.stop();
@@ -36,7 +46,7 @@ public class WeatherServer {
 
     public void start() {
         try {
-            System.out.println("Starting Weather App local testing server");
+            System.out.println("Starting Weather Server");
 
             server = new HttpServer();
             NetworkListener listener;
@@ -47,7 +57,7 @@ public class WeatherServer {
             WebappContext ctx = new WebappContext("ctx", "/");
             final ServletRegistration reg = ctx.addServlet("spring", new SpringServlet());
             reg.addMapping("/*");
-            ctx.addContextInitParameter("contextConfigLocation", "classpath:/applicationContext.xml");
+            ctx.addContextInitParameter("contextConfigLocation", production ? "classpath:/hazelcastContext.xml" : "classpath:/simpleContext.xml");
             ctx.addListener("org.springframework.web.context.ContextLoaderListener");
             ctx.addListener("org.springframework.web.context.request.RequestContextListener");
             ctx.deploy(server);

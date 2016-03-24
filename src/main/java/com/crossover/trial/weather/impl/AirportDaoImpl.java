@@ -1,28 +1,26 @@
 package com.crossover.trial.weather.impl;
 
 import com.crossover.trial.weather.*;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Implementation of the airport DAO using simple in-memory data storage
+ * Created by ekonovalov on 24.03.2016.
  */
-@Service
-public class AirportDaoImpl implements AirportDao {
+public abstract class AirportDaoImpl implements AirportDao {
 
-    private final static Logger LOGGER = Logger.getLogger(AirportDaoImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AirportDaoImpl.class.getName());
+
+    protected abstract Map<String, AirportData> getAirportDataStorage();
+    protected abstract Map<String, AtmosphericInformation> getAtmosphericInformationDataStorage();
 
     @Override
     public AirportData findAirportData(String iataCode) {
         LOGGER.log(Level.FINE, "Find airport data: " + iataCode);
         if (iataCode == null) return null;
-        return Storage.AIRPORT_DATA.get(iataCode);
+        return getAirportDataStorage().get(iataCode);
     }
 
     @Override
@@ -31,12 +29,12 @@ public class AirportDaoImpl implements AirportDao {
         Set<AirportData> result = new HashSet<>();
         if (iataCode == null) return result;
 
-        AirportData ad = Storage.AIRPORT_DATA.get(iataCode);
+        AirportData ad = getAirportDataStorage().get(iataCode);
         if (ad == null) {
             return result;
         }
 
-        for (AirportData a : Storage.AIRPORT_DATA.values()) {
+        for (AirportData a : getAirportDataStorage().values()) {
             if (calculateDistance(ad, a) <= radius) {
                 result.add(a);
             }
@@ -48,14 +46,14 @@ public class AirportDaoImpl implements AirportDao {
     @Override
     public Set<String> getAllAirportCodes() {
         LOGGER.log(Level.FINE, "Get all airport codes");
-        return Storage.AIRPORT_DATA.keySet();
+        return getAirportDataStorage().keySet();
     }
 
     @Override
     public AtmosphericInformation findAtmosphericInformation(String iataCode) {
         LOGGER.log(Level.FINE, "Find atmospheric information: " + iataCode);
         if (iataCode == null) return null;
-        return Storage.ATMOSPHERIC_INFORMATION.get(iataCode);
+        return getAtmosphericInformationDataStorage().get(iataCode);
     }
 
     @Override
@@ -65,7 +63,7 @@ public class AirportDaoImpl implements AirportDao {
         if (iataCode == null) return result;
 
         for (AirportData ad : findNearbyAirports(iataCode, radius)) {
-            AtmosphericInformation ai = Storage.ATMOSPHERIC_INFORMATION.get(ad.getIata());
+            AtmosphericInformation ai = getAtmosphericInformationDataStorage().get(ad.getIata());
             if (ai != null) {
                 result.add(ai);
             }
@@ -91,60 +89,66 @@ public class AirportDaoImpl implements AirportDao {
         return 6372.8 * c;
     }
 
-    public void updateAtmosphericInformation(String iataCode, String pointType, DataPoint dp) throws WeatherException {
+    public void updateAtmosphericInformation(String iataCode, String pointType, DataPoint dp) {
         LOGGER.log(Level.FINE, "Update atmospheric data: " + iataCode + ", " + pointType + ", " + dp);
 
-        if(iataCode == null) throw new WeatherException("Couldn't update atmospheric data. IATA code is null");
-        if(Storage.AIRPORT_DATA.get(iataCode) == null) throw new WeatherException("Couldn't update atmospheric data. Unknown IATA code");
-        if(pointType == null) throw new WeatherException("Couldn't update atmospheric data. pointType is null");
-        if(dp == null) throw new WeatherException("Couldn't update atmospheric data. Data point is null");
+        if(iataCode == null) throw new IllegalArgumentException("IATA code is null");
+        if(getAirportDataStorage().get(iataCode) == null) throw new IllegalArgumentException("Unknown IATA code");
+        if(pointType == null) throw new IllegalArgumentException("pointType is null");
+        if(dp == null) throw new IllegalArgumentException("Data point is null");
 
-        AtmosphericInformation ai = Storage.ATMOSPHERIC_INFORMATION.get(iataCode);
-        if (ai == null) {
-            ai = new AtmosphericInformation();
-            Storage.ATMOSPHERIC_INFORMATION.putIfAbsent(iataCode, ai);
-            ai = Storage.ATMOSPHERIC_INFORMATION.get(iataCode);
+        AtmosphericInformation oldValue = getAtmosphericInformationDataStorage().get(iataCode);
+        if (oldValue == null) {
+            oldValue = new AtmosphericInformation();
+            getAtmosphericInformationDataStorage().putIfAbsent(iataCode, oldValue);
+            oldValue = getAtmosphericInformationDataStorage().get(iataCode);
         }
 
+        while(true) {
+            AtmosphericInformation newValue = new AtmosphericInformation(oldValue.getTemperature(), oldValue.getHumidity(), oldValue.getWind(), oldValue.getPrecipitation(), oldValue.getPressure(), oldValue.getCloudCover());
+            updateAtmosphericInformation(newValue, pointType, dp);
+            if(getAtmosphericInformationDataStorage().replace(iataCode, oldValue, newValue)) break;
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, "", e);
+            }
+        }
+    }
+
+    protected void updateAtmosphericInformation(AtmosphericInformation ai, String pointType, DataPoint dp) {
         if (pointType.equalsIgnoreCase(DataPointType.WIND.name())) {
             if (dp.getMean() >= 0) {
                 ai.setWind(dp);
-                ai.setLastUpdateTime(System.currentTimeMillis());
-                return;
             }
+            else throw new IllegalArgumentException("Wrong parameter " + pointType + " = " + dp.getMean());
         } else if (pointType.equalsIgnoreCase(DataPointType.TEMPERATURE.name())) {
             if (dp.getMean() >= -50 && dp.getMean() < 100) {
                 ai.setTemperature(dp);
-                ai.setLastUpdateTime(System.currentTimeMillis());
-                return;
             }
+            else throw new IllegalArgumentException("Wrong parameter " + pointType + " = " + dp.getMean());
         } else if (pointType.equalsIgnoreCase(DataPointType.HUMIDTY.name())) {
             if (dp.getMean() >= 0 && dp.getMean() < 100) {
                 ai.setHumidity(dp);
-                ai.setLastUpdateTime(System.currentTimeMillis());
-                return;
             }
+            else throw new IllegalArgumentException("Wrong parameter " + pointType + " = " + dp.getMean());
         } else if (pointType.equalsIgnoreCase(DataPointType.PRESSURE.name())) {
             if (dp.getMean() >= 650 && dp.getMean() < 800) {
                 ai.setPressure(dp);
-                ai.setLastUpdateTime(System.currentTimeMillis());
-                return;
             }
+            else throw new IllegalArgumentException("Wrong parameter " + pointType + " = " + dp.getMean());
         } else if (pointType.equalsIgnoreCase(DataPointType.CLOUDCOVER.name())) {
             if (dp.getMean() >= 0 && dp.getMean() < 100) {
                 ai.setCloudCover(dp);
-                ai.setLastUpdateTime(System.currentTimeMillis());
-                return;
             }
+            else throw new IllegalArgumentException("Wrong parameter " + pointType + " = " + dp.getMean());
         } else if (pointType.equalsIgnoreCase(DataPointType.PRECIPITATION.name())) {
             if (dp.getMean() >= 0 && dp.getMean() < 100) {
                 ai.setPrecipitation(dp);
-                ai.setLastUpdateTime(System.currentTimeMillis());
-                return;
             }
+            else throw new IllegalArgumentException("");
         }
-
-        throw new WeatherException("Couldn't update atmospheric data");
+        ai.setLastUpdateTime(System.currentTimeMillis());
     }
 
     @Override
@@ -154,7 +158,7 @@ public class AirportDaoImpl implements AirportDao {
             LOGGER.severe("Cannot save airport");
             return;
         }
-        Storage.AIRPORT_DATA.put(ad.getIata(), ad);
+        getAirportDataStorage().put(ad.getIata(), ad);
     }
 
     @Override
@@ -165,7 +169,7 @@ public class AirportDaoImpl implements AirportDao {
             return;
         }
         deleteAtmosphericInformation(iataCode);
-        Storage.AIRPORT_DATA.remove(iataCode);
+        getAirportDataStorage().remove(iataCode);
     }
 
     @Override
@@ -175,7 +179,7 @@ public class AirportDaoImpl implements AirportDao {
             LOGGER.severe("Cannot delete atmospheric information");
             return;
         }
-        Storage.ATMOSPHERIC_INFORMATION.remove(iataCode);
+        getAtmosphericInformationDataStorage().remove(iataCode);
     }
 
 }

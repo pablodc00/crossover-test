@@ -70,7 +70,7 @@ public interface AirportDao {
      * @param pointType the data point type as a string
      * @param dp        the actual data point
      */
-    void updateAtmosphericInformation(String iataCode, String pointType, DataPoint dp) throws WeatherException;
+    void updateAtmosphericInformation(String iataCode, String pointType, DataPoint dp);
 
     /**
      * Delete atmospheric information of particular airport from the database

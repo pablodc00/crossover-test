@@ -49,7 +49,7 @@ public class RestWeatherCollectorEndpoint implements WeatherCollectorEndpoint {
 
         try {
             airportDao.updateAtmosphericInformation(iataCode, pointType, dp);
-        } catch (WeatherException e) {
+        } catch (IllegalArgumentException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }

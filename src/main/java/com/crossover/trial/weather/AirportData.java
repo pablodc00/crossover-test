@@ -1,9 +1,13 @@
 package com.crossover.trial.weather;
 
+import java.io.Serializable;
+
 /**
  * Basic airport information.
  */
-public class AirportData {
+public class AirportData implements Serializable {
+
+    private static final long serialVersionUID = 1948500081384365876L;
 
     /**
      * the three letter IATA code

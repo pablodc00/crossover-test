@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
  * Weather endpoint tests
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationContext.xml")
+@ContextConfiguration(locations = "/simpleContext.xml")
 public class WeatherEndpointTest {
 
     @Resource

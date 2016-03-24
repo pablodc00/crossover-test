@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  * Airport endpoint tests
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationContext.xml")
+@ContextConfiguration(locations = "/simpleContext.xml")
 public class AirportEndpointTest {
 
     @Resource

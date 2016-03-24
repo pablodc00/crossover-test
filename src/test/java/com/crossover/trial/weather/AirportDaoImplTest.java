@@ -2,21 +2,18 @@ package com.crossover.trial.weather;
 
 import org.junit.After;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
- * Airport DAO tests
+ * Created by ekonovalov on 24.03.2016.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationContext.xml")
 public class AirportDaoImplTest {
 
     @Resource
@@ -97,7 +94,7 @@ public class AirportDaoImplTest {
     }
 
     @Test
-    public void testFindAtmosphericInformation() throws WeatherException {
+    public void testFindAtmosphericInformation() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
 
@@ -123,7 +120,7 @@ public class AirportDaoImplTest {
     }
 
     @Test
-    public void testFindAtmosphericInformationNearbyAirport() throws WeatherException {
+    public void testFindAtmosphericInformationNearbyAirport() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
 
@@ -156,7 +153,7 @@ public class AirportDaoImplTest {
     }
 
     @Test
-    public void testUpdateAtmosphericInformation() throws WeatherException {
+    public void testUpdateAtmosphericInformation() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
         assertNotNull(airportDao.findAirportData("AAA"));
@@ -184,10 +181,10 @@ public class AirportDaoImplTest {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
 
-        WeatherException exception = null;
+        IllegalArgumentException exception = null;
         try {
             airportDao.updateAtmosphericInformation(null, DataPointType.WIND.name(), new DataPoint(10, 20, 30, 40, 50));
-        } catch (WeatherException e) {
+        } catch (IllegalArgumentException e) {
             exception = e;
         }
 
@@ -196,7 +193,7 @@ public class AirportDaoImplTest {
         exception = null;
         try {
             airportDao.updateAtmosphericInformation("AAA", null, new DataPoint(10, 20, 30, 40, 50));
-        } catch (WeatherException e) {
+        } catch (IllegalArgumentException e) {
             exception = e;
         }
 
@@ -205,7 +202,7 @@ public class AirportDaoImplTest {
         exception = null;
         try {
             airportDao.updateAtmosphericInformation("AAA", DataPointType.WIND.name(), null);
-        } catch (WeatherException e) {
+        } catch (IllegalArgumentException e) {
             exception = e;
         }
 
@@ -214,10 +211,10 @@ public class AirportDaoImplTest {
 
     @Test
     public void testUpdateAtmosphericInformationUnknown() {
-        WeatherException exception = null;
+        IllegalArgumentException exception = null;
         try {
             airportDao.updateAtmosphericInformation("", DataPointType.WIND.name(), new DataPoint(10, 20, 30, 40, 50));
-        } catch (WeatherException e) {
+        } catch (IllegalArgumentException e) {
             exception = e;
         }
 
@@ -238,7 +235,7 @@ public class AirportDaoImplTest {
     }
 
     @Test
-    public void testDeleteAirport() throws WeatherException {
+    public void testDeleteAirport() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
         assertNotNull(airportDao.findAirportData("AAA"));
@@ -257,7 +254,7 @@ public class AirportDaoImplTest {
     }
 
     @Test
-    public void testDeleteAtmosphericInformation() throws WeatherException {
+    public void testDeleteAtmosphericInformation() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
         assertNotNull(airportDao.findAirportData("AAA"));

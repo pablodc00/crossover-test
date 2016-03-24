@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
  * Airport loader tests
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationContext.xml")
+@ContextConfiguration(locations = "/simpleContext.xml")
 public class AirportLoaderTest {
 
     private static WeatherServer server;
