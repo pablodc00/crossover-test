@@ -43,55 +43,30 @@
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
         </dependency>
-
-<dependency>
-    <groupId>org.glassfish.grizzly</groupId>
-    <artifactId>grizzly-http-server</artifactId>
-    <version>2.3.24</version>
-</dependency>
-<dependency>
-    <groupId>org.glassfish.grizzly</groupId>
-    <artifactId>grizzly-http-servlet</artifactId>
-    <version>2.3.24</version>
-</dependency>
-
-        <!--dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-grizzly2-http</artifactId>
-        </dependency-->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
         </dependency>
-
-        <!--dependency>
-            <groupId>org.glassfish.jersey.test-framework</groupId>
-            <artifactId>jersey-test-framework-util</artifactId>
+        <dependency>
+            <groupId>org.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http-servlet</artifactId>
+            <version>2.3.24</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jersey.test-framework.providers</groupId>
-            <artifactId>jersey-test-framework-provider-bundle</artifactId>
-            <type>pom</type>
-        </dependency-->
-<dependency>
-    <groupId>com.hazelcast</groupId>
-    <artifactId>hazelcast</artifactId>
-    <version>3.6.1</version>
-</dependency>
-<dependency>
-    <groupId>com.hazelcast</groupId>
-    <artifactId>hazelcast-spring</artifactId>
-    <version>3.6.1</version>
-</dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+            <version>3.6.1</version>
+        </dependency>
         <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-spring</artifactId>
-            <version>1.19.1</version>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-spring</artifactId>
+            <version>3.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-spring3</artifactId>
+            <version>${jersey.version}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
@@ -105,16 +80,12 @@
                     <artifactId>spring-beans</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-context</artifactId>
+                    <groupId>org.glassfish.hk2.external</groupId>
+                    <artifactId>bean-validator</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.ws.rs</groupId>
-                    <artifactId>jsr311-api</artifactId>
+                    <groupId>org.jvnet</groupId>
+                    <artifactId>tiger-types</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -203,7 +174,6 @@
                         </filter>
                     </filters>
                 </configuration>
-
                 <executions>
                     <execution>
                         <phase>package</phase>

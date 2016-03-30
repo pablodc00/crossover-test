@@ -23,7 +23,7 @@ public class AirportEndpointTest {
     private WeatherCollectorEndpoint endpoint;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Storage.AIRPORT_DATA.clear();
         Storage.ATMOSPHERIC_INFORMATION.clear();
         Storage.REQUEST_FREQUENCY.clear();
@@ -38,7 +38,7 @@ public class AirportEndpointTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testAddAirport() throws Exception {
+    public void testAddAirport() {
         endpoint.addAirport("AAA", "0", "0");
         AirportData ad = (AirportData) endpoint.getAirport("AAA").getEntity();
         assertNotNull(ad);
@@ -58,7 +58,7 @@ public class AirportEndpointTest {
     }
 
     @Test
-    public void testGetAirport() throws Exception {
+    public void testGetAirport() {
         AirportData ad = (AirportData) endpoint.getAirport("BOS").getEntity();
         assertNotNull(ad);
         endpoint.getAirport(null);
@@ -66,13 +66,13 @@ public class AirportEndpointTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGetAirports() throws Exception {
+    public void testGetAirports() {
         Set<String> airports = (Set<String>) endpoint.getAirports().getEntity();
         assertEquals(airports.size(), 5);
     }
 
     @Test
-    public void testDeleteAirport() throws Exception {
+    public void testDeleteAirport() {
         AirportData ad = (AirportData) endpoint.getAirport("BOS").getEntity();
         assertNotNull(ad);
         endpoint.deleteAirport("BOS");

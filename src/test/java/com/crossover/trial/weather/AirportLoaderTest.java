@@ -11,6 +11,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.junit.Assert.assertNotEquals;
@@ -34,21 +35,27 @@ public class AirportLoaderTest {
     private WebTarget collect;
 
     @BeforeClass
-    public static void init() throws Exception {
+    public static void init() {
         server = new WeatherServer();
         server.start();
         WEATHER_SERVER_URL = WEATHER_SERVER_URL + server.getPort();
         System.setOut(new PrintStream(out));
     }
 
+    @AfterClass
+    public static void destroy() {
+        System.setOut(systemOut);
+        server.stop();
+    }
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Client client = ClientBuilder.newClient();
         collect = client.target(WEATHER_SERVER_URL + "/collect");
     }
 
     @Test
-    public void test() throws Exception {
+    public void test() throws IOException {
         new AirportLoader(WEATHER_SERVER_URL).upload(AirportLoader.class.getResourceAsStream("/airports.dat"));
         String output = new String(out.toByteArray(), 0, out.size());
 
@@ -65,14 +72,8 @@ public class AirportLoaderTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         airportDao.getAllAirportCodes().forEach(airportDao::deleteAirport);
-    }
-
-    @AfterClass
-    public static void destroy() throws Exception {
-        System.setOut(systemOut);
-        server.stop();
     }
 
 }

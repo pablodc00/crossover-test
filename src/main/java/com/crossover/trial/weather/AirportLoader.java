@@ -26,7 +26,7 @@ public class AirportLoader {
     }
 
     public static void main(String args[]) throws IOException {
-        if(args.length != 2) {
+        if (args.length != 2) {
             System.out.println("USAGE: java com.crossover.trial.weather.AirportLoader file_name weather_server_url");
             return;
         }

@@ -1,18 +1,15 @@
 package com.crossover.trial.weather;
 
 import org.junit.After;
-import org.junit.Test;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
- * Created by ekonovalov on 24.03.2016.
+ * Base class for DAO testing
  */
 public class AirportDaoImplTest {
 
@@ -21,7 +18,6 @@ public class AirportDaoImplTest {
     @Resource
     private PerformanceDao performanceDao;
 
-    @Test
     public void testFindAirportData() {
         AirportData ad = new AirportData("AAA", 1, 2);
         airportDao.saveAirport(ad);
@@ -33,19 +29,16 @@ public class AirportDaoImplTest {
         assertTrue(ad.getLongitude() == 2);
     }
 
-    @Test
     public void testFindAirportDataNull() {
         AirportData ad = airportDao.findAirportData(null);
         assertNull(ad);
     }
 
-    @Test
     public void testFindAirportDataUnknown() {
         AirportData ad = airportDao.findAirportData("");
         assertNull(ad);
     }
 
-    @Test
     public void testFindNearbyAirports() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
@@ -63,19 +56,16 @@ public class AirportDaoImplTest {
         assertTrue(result.size() == 2);
     }
 
-    @Test
     public void testFindNearbyAirportsNull() {
         Set<AirportData> result = airportDao.findNearbyAirports(null, 1);
         assertTrue(0 == result.size());
     }
 
-    @Test
     public void testFindNearbyAirportsUnknown() {
         Set<AirportData> result = airportDao.findNearbyAirports("", 1);
         assertTrue(0 == result.size());
     }
 
-    @Test
     public void testGetAllAirportCodes() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
@@ -93,7 +83,6 @@ public class AirportDaoImplTest {
         assertTrue(result.size() == 3);
     }
 
-    @Test
     public void testFindAtmosphericInformation() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
@@ -107,19 +96,16 @@ public class AirportDaoImplTest {
         assertNotNull(result);
     }
 
-    @Test
     public void testFindAtmosphericInformationNull() {
         AtmosphericInformation result = airportDao.findAtmosphericInformation(null);
         assertNull(result);
     }
 
-    @Test
     public void testFindAtmosphericInformationUnknown() {
         AtmosphericInformation result = airportDao.findAtmosphericInformation("");
         assertNull(result);
     }
 
-    @Test
     public void testFindAtmosphericInformationNearbyAirport() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
@@ -140,19 +126,16 @@ public class AirportDaoImplTest {
         assertTrue(result.size() == 2);
     }
 
-    @Test
     public void testFindAtmosphericInformationNearbyAirportNull() {
         List<AtmosphericInformation> result = airportDao.findAtmosphericInformationNearbyAirport(null, 1);
         assertTrue(result.size() == 0);
     }
 
-    @Test
     public void testFindAtmosphericInformationNearbyAirportUnknown() {
         List<AtmosphericInformation> result = airportDao.findAtmosphericInformationNearbyAirport("", 1);
         assertTrue(result.size() == 0);
     }
 
-    @Test
     public void testUpdateAtmosphericInformation() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
@@ -176,7 +159,6 @@ public class AirportDaoImplTest {
         assertTrue(ai.getWind().getCount() == 10);
     }
 
-    @Test
     public void testUpdateAtmosphericInformationNull() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
@@ -209,7 +191,6 @@ public class AirportDaoImplTest {
         assertNotNull(exception);
     }
 
-    @Test
     public void testUpdateAtmosphericInformationUnknown() {
         IllegalArgumentException exception = null;
         try {
@@ -221,20 +202,17 @@ public class AirportDaoImplTest {
         assertNotNull(exception);
     }
 
-    @Test
     public void testSaveAirport() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
         assertNotNull(airportDao.findAirportData("AAA"));
     }
 
-    @Test
     public void testSaveAirportNull() {
         airportDao.saveAirport(null);
         airportDao.saveAirport(new AirportData(null, 1, 1));
     }
 
-    @Test
     public void testDeleteAirport() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
@@ -248,12 +226,10 @@ public class AirportDaoImplTest {
         assertNull(airportDao.findAtmosphericInformation("AAA"));
     }
 
-    @Test
     public void testDeleteAirportNull() {
         airportDao.deleteAirport(null);
     }
 
-    @Test
     public void testDeleteAtmosphericInformation() {
         AirportData ad = new AirportData("AAA", 1, 1);
         airportDao.saveAirport(ad);
@@ -267,12 +243,10 @@ public class AirportDaoImplTest {
         assertNull(airportDao.findAtmosphericInformation("AAA"));
     }
 
-    @Test
     public void testDeleteAtmosphericInformationNull() {
         airportDao.deleteAtmosphericInformation(null);
     }
 
-    @Test
     public void testDeleteAtmosphericInformationUnknown() {
         airportDao.deleteAtmosphericInformation("");
     }

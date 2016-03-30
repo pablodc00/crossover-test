@@ -43,7 +43,7 @@ public class RestWeatherCollectorEndpoint implements WeatherCollectorEndpoint {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        if(iataCode == null || pointType == null || dp == null || airportDao.findAirportData(iataCode) == null) {
+        if (iataCode == null || pointType == null || dp == null || airportDao.findAirportData(iataCode) == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 

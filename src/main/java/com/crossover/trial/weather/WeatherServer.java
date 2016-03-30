@@ -1,10 +1,10 @@
 package com.crossover.trial.weather;
 
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import org.glassfish.grizzly.PortRange;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.servlet.WebappContext;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 import javax.servlet.ServletRegistration;
 import java.io.IOException;
@@ -12,8 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A main method used to test the Weather Application. You are free to modify this main method
- * as you wish - it's in not used by the grader.
+ * It's a production level server!
+ * <p>
+ * Try to start several nodes using: java -jar -Dmode=production weather-1.1.0.jar
+ *
+ * @see com.crossover.trial.weather.WeatherClusterTest
  */
 public class WeatherServer {
 
@@ -22,8 +25,7 @@ public class WeatherServer {
 
     private boolean production = false;
 
-    public WeatherServer() {
-    }
+    public WeatherServer() {}
 
     public WeatherServer(boolean production) {
         this.production = production;
@@ -31,13 +33,19 @@ public class WeatherServer {
 
     public static void main(String[] args) throws InterruptedException {
         WeatherServer server;
+        String port = System.getProperty("port");
         String mode = System.getProperty("mode");
-        if(mode != null && mode.equalsIgnoreCase("production")) {
+        if (mode != null && mode.equalsIgnoreCase("production")) {
             System.out.println("Starting Weather Server in production mode");
             server = new WeatherServer(true);
-        }
-        else {
+        } else {
             server = new WeatherServer();
+        }
+        if(port != null) {
+            try {
+                server.port = Integer.valueOf(port);
+            }
+            catch(NumberFormatException ignore) {}
         }
         server.start();
         Thread.currentThread().join();
@@ -50,16 +58,19 @@ public class WeatherServer {
 
             server = new HttpServer();
             NetworkListener listener;
-            if(port == -1) listener = new NetworkListener("grizzly2", "localhost", new PortRange(9000, 9999));
+            if (port == -1) listener = new NetworkListener("grizzly2", "localhost", new PortRange(9000, 9999));
             else listener = new NetworkListener("grizzly2", "localhost", port);
             server.addListener(listener);
 
             WebappContext ctx = new WebappContext("ctx", "/");
-            final ServletRegistration reg = ctx.addServlet("spring", new SpringServlet());
-            reg.addMapping("/*");
             ctx.addContextInitParameter("contextConfigLocation", production ? "classpath:/hazelcastContext.xml" : "classpath:/simpleContext.xml");
             ctx.addListener("org.springframework.web.context.ContextLoaderListener");
             ctx.addListener("org.springframework.web.context.request.RequestContextListener");
+
+            final ServletRegistration reg = ctx.addServlet("spring", new ServletContainer());
+            reg.addMapping("/*");
+            reg.setInitParameter("javax.ws.rs.Application", "com.crossover.trial.weather.WeatherApplication");
+
             ctx.deploy(server);
 
             server.start();
@@ -72,7 +83,7 @@ public class WeatherServer {
     }
 
     public void stop() {
-        server.shutdown();
+        server.shutdownNow();
     }
 
     public int getPort() {
