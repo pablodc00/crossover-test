@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -28,7 +29,6 @@ public class RestWeatherQueryEndpoint implements WeatherQueryEndpoint {
 
     @Override
     public String ping() {
-        LOGGER.fine("Ping");
         RequestFrequencyData data = performanceDao.getPerformanceData();
 
         Map<String, Object> result = new HashMap<>();
@@ -39,14 +39,13 @@ public class RestWeatherQueryEndpoint implements WeatherQueryEndpoint {
         try {
             return new ObjectMapper().writeValueAsString(result);
         } catch (JsonProcessingException e) {
+            LOGGER.log(Level.SEVERE, "Cannot serialize performance data", e);
             return "";
         }
     }
 
     @Override
     public Response weather(String iata, String radiusString) {
-        LOGGER.fine("Query weather: " + iata + ", " + radiusString);
-
         double radius = radiusString == null || radiusString.trim().isEmpty() ? 0 : Double.valueOf(radiusString);
         if (radius < 0) radius = 0;
         performanceDao.updateRequestFrequency(iata, radius);

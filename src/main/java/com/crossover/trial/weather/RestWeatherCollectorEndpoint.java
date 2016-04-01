@@ -25,7 +25,6 @@ public class RestWeatherCollectorEndpoint implements WeatherCollectorEndpoint {
 
     @Override
     public Response ping() {
-        LOGGER.fine("Ping");
         return Response.status(Response.Status.OK).entity("ready").build();
     }
 
@@ -34,16 +33,16 @@ public class RestWeatherCollectorEndpoint implements WeatherCollectorEndpoint {
                                   String pointType,
                                   String datapointJson) {
 
-        LOGGER.fine("Update weather: " + iataCode + ", " + pointType + ", " + datapointJson);
-
         DataPoint dp;
         try {
             dp = new ObjectMapper().readValue(datapointJson, DataPoint.class);
         } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Cannot read datapoint", e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
         if (iataCode == null || pointType == null || dp == null || airportDao.findAirportData(iataCode) == null) {
+            LOGGER.log(Level.SEVERE, "Bad parameters: iataCode = " + iataCode + ", pointType = " + pointType + ", dp = " + dp);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -59,7 +58,6 @@ public class RestWeatherCollectorEndpoint implements WeatherCollectorEndpoint {
 
     @Override
     public Response getAirports() {
-        LOGGER.fine("Get all airports");
         Set<String> result = new HashSet<>();
         result.addAll(airportDao.getAllAirportCodes());
 
@@ -68,7 +66,6 @@ public class RestWeatherCollectorEndpoint implements WeatherCollectorEndpoint {
 
     @Override
     public Response getAirport(String iata) {
-        LOGGER.fine("Get airport: " + iata);
         AirportData ad = airportDao.findAirportData(iata);
         return Response.status(Response.Status.OK).entity(ad).build();
     }
@@ -78,8 +75,8 @@ public class RestWeatherCollectorEndpoint implements WeatherCollectorEndpoint {
                                String latString,
                                String longString) {
 
-        LOGGER.fine("Add airport: " + iata + ", " + latString + ", " + longString);
         if (iata == null || iata.length() != 3 || latString == null || longString == null) {
+            LOGGER.log(Level.SEVERE, "Bad parameters: iata = " + iata + ", latString = " + latString + ", longString = " + longString);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -89,12 +86,12 @@ public class RestWeatherCollectorEndpoint implements WeatherCollectorEndpoint {
             latitude = Double.valueOf(latString);
             longitude = Double.valueOf(longString);
         } catch (NumberFormatException ex) {
-            LOGGER.severe("Wrong airport coordinates");
+            LOGGER.severe("Wrong airport coordinates latString = " + latString + ", longString = " + longString);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-            LOGGER.severe("Wrong airport coordinates");
+            LOGGER.severe("Wrong airport coordinates latString = " + latString + ", longString = " + longString);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -110,14 +107,12 @@ public class RestWeatherCollectorEndpoint implements WeatherCollectorEndpoint {
 
     @Override
     public Response deleteAirport(String iata) {
-        LOGGER.fine("Delete airport: " + iata);
         airportDao.deleteAirport(iata);
         return Response.status(Response.Status.OK).build();
     }
 
     @Override
     public Response exit() {
-        LOGGER.fine("Exit");
         return Response.status(Response.Status.FORBIDDEN).build();
     }
 

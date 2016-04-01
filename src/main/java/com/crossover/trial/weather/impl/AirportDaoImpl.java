@@ -28,19 +28,24 @@ public abstract class AirportDaoImpl implements AirportDao {
 
     @Override
     public AirportData findAirportData(String iataCode) {
-        LOGGER.log(Level.FINE, "Find airport data: " + iataCode);
-        if (iataCode == null) return null;
+        if (iataCode == null) {
+            LOGGER.severe("iataCode is null");
+            return null;
+        }
         return getAirportDataStorage().get(iataCode);
     }
 
     @Override
     public Set<AirportData> findNearbyAirports(String iataCode, double radius) {
-        LOGGER.log(Level.FINE, "Find nearby airports: " + iataCode + ", " + radius);
         Set<AirportData> result = new HashSet<>();
-        if (iataCode == null) return result;
+        if (iataCode == null) {
+            LOGGER.severe("iataCode is null");
+            return result;
+        }
 
         AirportData ad = getAirportDataStorage().get(iataCode);
         if (ad == null) {
+            LOGGER.severe("Cannot find airport iataCode = " + iataCode);
             return result;
         }
 
@@ -55,20 +60,17 @@ public abstract class AirportDaoImpl implements AirportDao {
 
     @Override
     public Set<String> getAllAirportCodes() {
-        LOGGER.log(Level.FINE, "Get all airport codes");
         return getAirportDataStorage().keySet();
     }
 
     @Override
     public AtmosphericInformation findAtmosphericInformation(String iataCode) {
-        LOGGER.log(Level.FINE, "Find atmospheric information: " + iataCode);
         if (iataCode == null) return null;
         return getAtmosphericInformationDataStorage().get(iataCode);
     }
 
     @Override
     public List<AtmosphericInformation> findAtmosphericInformationNearbyAirport(String iataCode, double radius) {
-        LOGGER.log(Level.FINE, "Find atmospheric information near airport: " + iataCode + ", " + radius);
         List<AtmosphericInformation> result = new ArrayList<>();
         if (iataCode == null) return result;
 
@@ -100,8 +102,6 @@ public abstract class AirportDaoImpl implements AirportDao {
     }
 
     public void updateAtmosphericInformation(String iataCode, String pointType, DataPoint dp) {
-        LOGGER.log(Level.FINE, "Update atmospheric data: " + iataCode + ", " + pointType + ", " + dp);
-
         if (iataCode == null) throw new IllegalArgumentException("IATA code is null");
         if (getAirportDataStorage().get(iataCode) == null) throw new IllegalArgumentException("Unknown IATA code");
         if (pointType == null) throw new IllegalArgumentException("pointType is null");
@@ -121,7 +121,7 @@ public abstract class AirportDaoImpl implements AirportDao {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                LOGGER.log(Level.SEVERE, "", e);
+                LOGGER.log(Level.SEVERE, "updateAtmosphericInformation", e);
             }
         }
     }
@@ -157,7 +157,6 @@ public abstract class AirportDaoImpl implements AirportDao {
 
     @Override
     public void saveAirport(AirportData ad) {
-        LOGGER.fine("Save airport: " + ad);
         if (ad == null || ad.getIata() == null) {
             LOGGER.severe("Cannot save airport");
             return;
@@ -167,7 +166,6 @@ public abstract class AirportDaoImpl implements AirportDao {
 
     @Override
     public void deleteAirport(String iataCode) {
-        LOGGER.fine("Delete airport: " + iataCode);
         if (iataCode == null) {
             LOGGER.severe("Cannot delete airport");
             return;
@@ -178,7 +176,6 @@ public abstract class AirportDaoImpl implements AirportDao {
 
     @Override
     public void deleteAtmosphericInformation(String iataCode) {
-        LOGGER.fine("Delete atmospheric information: " + iataCode);
         if (iataCode == null) {
             LOGGER.severe("Cannot delete atmospheric information");
             return;

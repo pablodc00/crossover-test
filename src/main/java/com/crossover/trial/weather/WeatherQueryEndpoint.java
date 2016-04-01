@@ -21,9 +21,14 @@ public interface WeatherQueryEndpoint {
      * requests for each radius.
      *
      * @deprecated because of the complete stupidity of the data that this service provides!!!
-     * It won't help in any issue investigation. Suggest to consider using any production level APM (application
+     * It won't help in any issue investigation. I suggest to consider using any production level APM (application
      * performance monitoring) system like New Relic (http://newrelic.com, it's preferrable if SaaS suits for the
      * project) or AppDynamics (http://appdynamics.com, it's the choice when you need On-Premise solution)
+     *
+     * An example of monitoring of a 4 node cluster in New Relic:
+     * @see src/test/resources/overview.png
+     * @see src/test/resources/jvm.png
+     * @see src/test/resources/service_map.png
      *
      * @return a JSON formatted dict with health information.
      */

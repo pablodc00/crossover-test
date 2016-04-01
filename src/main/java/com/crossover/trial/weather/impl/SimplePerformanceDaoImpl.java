@@ -17,15 +17,11 @@ import java.util.logging.Logger;
 @Deprecated
 public class SimplePerformanceDaoImpl implements PerformanceDao {
 
-    private final static Logger LOGGER = Logger.getLogger(SimpleAirportDaoImpl.class.getName());
-
     @Resource
     private AirportDao airportDao;
 
     @Override
     public void updateRequestFrequency(String iata, Double radius) {
-        LOGGER.log(Level.FINE, "Update request frequency: " + iata + ", " + radius);
-
         AirportData airportData = airportDao.findAirportData(iata);
 
         if (airportData != null) {
@@ -53,8 +49,6 @@ public class SimplePerformanceDaoImpl implements PerformanceDao {
 
     @Override
     public RequestFrequencyData getPerformanceData() {
-        LOGGER.log(Level.FINE, "Get performance data");
-
         RequestFrequencyData data = new RequestFrequencyData();
 
         int dataSize = 0;
@@ -106,8 +100,6 @@ public class SimplePerformanceDaoImpl implements PerformanceDao {
         }
 
         data.setRadiusFrequency(hist);
-
-        LOGGER.log(Level.FINE, "Performance data : " + data);
 
         return data;
     }
