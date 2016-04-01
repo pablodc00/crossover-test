@@ -16,9 +16,10 @@ import java.util.logging.LogManager;
 import static org.junit.Assert.*;
 
 /**
- * Created by ekonovalov on 24.03.2016.
+ * It's a test for AWS cluster. When several nodes are started Hazelcast automatically former a cluster and starts to
+ * replicate data between nodes. In case of a node crush data won't be lost!
  */
-public class WeatherClusterTest {
+public class WeatherClusterIntegrationTest {
 
     private static WeatherServer[] servers = new WeatherServer[2];
     private Client client = ClientBuilder.newClient();
@@ -26,18 +27,11 @@ public class WeatherClusterTest {
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
         for (int i = 0; i < servers.length; i++) {
-            WeatherServer server = new WeatherServer(true);
+            WeatherServer server = new WeatherServer();
             servers[i] = server;
         }
         for (WeatherServer server : servers) {
             server.start();
-        }
-    }
-
-    @AfterClass
-    public static void destroy() {
-        for (WeatherServer server : servers) {
-            if (server != null) server.stop();
         }
     }
 
@@ -92,7 +86,7 @@ public class WeatherClusterTest {
         assertNotNull(exception);
 
         //start the node again
-        servers[1] = new WeatherServer(true);
+        servers[1] = new WeatherServer();
         servers[1].start();
 
         //check that data is replicated back to the node
@@ -100,6 +94,13 @@ public class WeatherClusterTest {
         AirportData ad = collect.path("/airport/BOS").request().get().readEntity(AirportData.class);
         assertNotNull(ad);
 
+    }
+
+    @AfterClass
+    public static void destroy() {
+        for (WeatherServer server : servers) {
+            if (server != null) server.stop();
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package com.crossover.trial.weather;
 /**
  * DAO for performance data
  */
+@Deprecated
 public interface PerformanceDao {
 
     /**

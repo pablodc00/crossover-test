@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Implementation of the airport DAO using Hazelcast framework.
  * <p>
- * It's an example of the implementation that can be used in production. It's easy to
+ * It's an example of the implementation that can be used in production.
  */
 public class HazelcastAirportDaoImpl extends AirportDaoImpl {
 

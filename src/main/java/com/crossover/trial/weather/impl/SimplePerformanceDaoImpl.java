@@ -14,6 +14,7 @@ import java.util.logging.Logger;
  * Implementation of the performance DAO using simple in-memory data storage
  */
 @Service
+@Deprecated
 public class SimplePerformanceDaoImpl implements PerformanceDao {
 
     private final static Logger LOGGER = Logger.getLogger(SimpleAirportDaoImpl.class.getName());

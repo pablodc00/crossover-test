@@ -20,11 +20,17 @@ public interface WeatherQueryEndpoint {
      * of datapoints currently held in memory, the frequency of requests for each IATA code and the frequency of
      * requests for each radius.
      *
+     * @deprecated because of the complete stupidity of the data that this service provides!!!
+     * It won't help in any issue investigation. Suggest to consider using any production level APM (application
+     * performance monitoring) system like New Relic (http://newrelic.com, it's preferrable if SaaS suits for the
+     * project) or AppDynamics (http://appdynamics.com, it's the choice when you need On-Premise solution)
+     *
      * @return a JSON formatted dict with health information.
      */
     @GET
     @Path("/ping")
     @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
     String ping();
 
     /**
@@ -40,4 +46,5 @@ public interface WeatherQueryEndpoint {
     @Path("/weather/{iata}/{radius}")
     @Produces(MediaType.APPLICATION_JSON)
     Response weather(@PathParam("iata") String iata, @PathParam("radius") String radiusString);
+
 }

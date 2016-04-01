@@ -7,7 +7,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by ekonovalov on 24.03.2016.
+ * General implementation of the DAO that can be used for any key-value storage.
+ *
+ * For example:
+ * Simple in-memory storage based on ConcurrentHashMap
+ * @see SimpleAirportDaoImpl
+ * Clusterable storage based on Hazelcast framework
+ * @see HazelcastAirportDaoImpl
+ *
+ * It also can be used with MongoDB or Cassandra.
+ *
  */
 public abstract class AirportDaoImpl implements AirportDao {
 

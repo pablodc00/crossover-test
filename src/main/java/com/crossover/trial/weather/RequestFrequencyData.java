@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * Holder object for performance data
  */
+@Deprecated
 public class RequestFrequencyData {
 
     /**

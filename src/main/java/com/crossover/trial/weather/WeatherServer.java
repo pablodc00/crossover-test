@@ -14,39 +14,33 @@ import java.util.logging.Logger;
 /**
  * It's a production level server!
  * <p>
- * Try to start several nodes using: java -jar -Dmode=production weather-1.1.0.jar
+ * Try to start several nodes using: java -jar [-Dmode=production] [-Dport=XXXX] weather-1.1.0.jar
  *
- * @see com.crossover.trial.weather.WeatherClusterTest
+ * @see com.crossover.trial.weather.WeatherClusterIntegrationTest
  */
 public class WeatherServer {
 
     private static HttpServer server;
-    private int port = -1;
 
+    private int port = -1;
     private boolean production = false;
 
     public WeatherServer() {}
 
-    public WeatherServer(boolean production) {
-        this.production = production;
-    }
-
     public static void main(String[] args) throws InterruptedException {
-        WeatherServer server;
-        String port = System.getProperty("port");
+        WeatherServer server = new WeatherServer();
+
         String mode = System.getProperty("mode");
-        if (mode != null && mode.equalsIgnoreCase("production")) {
-            System.out.println("Starting Weather Server in production mode");
-            server = new WeatherServer(true);
-        } else {
-            server = new WeatherServer();
-        }
+        server.production = (mode != null && mode.equalsIgnoreCase("production"));
+
+        String port = System.getProperty("port");
         if(port != null) {
             try {
                 server.port = Integer.valueOf(port);
             }
             catch(NumberFormatException ignore) {}
         }
+
         server.start();
         Thread.currentThread().join();
         server.stop();
@@ -54,7 +48,7 @@ public class WeatherServer {
 
     public void start() {
         try {
-            System.out.println("Starting Weather Server");
+            System.out.println("Starting Weather Server" + (production ? " in production mode" : " in test mode"));
 
             server = new HttpServer();
             NetworkListener listener;
